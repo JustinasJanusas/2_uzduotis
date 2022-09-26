@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include <liblinkedlist.h>
+#include "linkedlist.h"
 #include <string.h>
+#include <signal.h>
 
 #define DELIMETER ','
 
@@ -11,14 +12,18 @@ void read_info(struct Person **list, int index);
 void get_delete_info(struct Person **list);
 void get_get_info(struct Person *list);
 void get_find_info(struct Person *list);
+void sig_handler(int signum);
+
+struct Person *list = NULL;
 
 int main(int argc, char *argv[]){
+	signal(SIGINT, sig_handler);
 	char file_name[50];
 	if(argc > 1)
 		strncpy(file_name, argv[1], sizeof(file_name)); 
 	else
 		strcpy(file_name, "data.csv");
-	struct Person *list = NULL;
+	
 	FILE *data_file = NULL;
 	data_file = fopen(file_name, "r");
 	if(!data_file){
@@ -133,4 +138,11 @@ void get_find_info(struct Person *list){
 		print_person(temp);
 	else
 		printf("Toks asmuo nerastas\n");
+}
+void sig_handler(int signum){
+	if(signum == SIGINT){
+		printf("\n");
+		delete_list(&list);
+		exit(1);
+	}
 }
